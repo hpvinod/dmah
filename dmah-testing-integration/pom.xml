@@ -129,7 +129,7 @@
 				<configuration>
 					<reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
 					<runpath>  
- 					c:\PROGRA~2\jenkins\jobs\dmah-testing-integration\workspace\dmah-testing-integration\target\classes 
+					c:\PROGRA~2\Jenkins\workspace\dmah-testing-integration\dmah-testing-integration\target\classes
  					</runpath> 
 					<junitxml>.</junitxml>
 					<filereports>WDF TestSuite.txt</filereports>
