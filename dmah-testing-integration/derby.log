@@ -1,0 +1,13 @@
+----------------------------------------------------------------
+Thu May 19 11:03:28 IST 2016:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.10.2.0 - (1582446): instance a816c00e-0154-c781-19ee-00001a6d9538 
+on database directory C:\Users\payal.patel\AppData\Local\Temp\spark-e9cb0f66-b554-46eb-b831-969cdd83052e\metastore with class loader java.net.URLClassLoader@3764951d 
+Loaded from file:/C:/Users/payal.patel/.m2/repository/org/apache/derby/derby/10.10.2.0/derby-10.10.2.0.jar
+java.vendor=Oracle Corporation
+java.runtime.version=1.8.0_91-b14
+user.dir=C:\Users\payal.patel\git\dmah\dmah-testing-integration
+os.name=Windows 7
+os.arch=amd64
+os.version=6.1
+derby.system.home=null
+Database Class Loader started - derby.database.classpath=''

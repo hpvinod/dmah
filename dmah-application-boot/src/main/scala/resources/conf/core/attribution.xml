@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+	<bean name="diagnosticConfig" class="com.accenture.aa.dmah.attribution.util.DiagnosticConfig">
+  		<property name="attributionModeTest" value="true" />
+  		<property name="hdfsFolder" value="/tmp/" />
+  		<property name="modelllingInputFile" value="sorted_modelling_input" />
+  		<property name="investmentInputFile" value="Investment" />
+  		<property name="contributionInputFile" value="Contribution.csv" />
+  		<property name="filteredNonConversionUserJrnyFile" value="filteredNonConversionUserJrny" />
+  		<property name="channelWtAttributionFile" value="UserChannelWtAttribution" />
+  		<property name="channelROIFile" value="ChannelROI" />
+  		<property name="logisticsflattenedPath" value="flattenedPath" />
+  		<property name="lrSampleTransformedData" value="sampleTransformedData" />
+  		<property name="lrSampleCoefficients" value="lrSampleCoefficients" />
+  		<property name="lrFinalCoefficients" value="lrFinalCoefficients" />
+  		<property name="lrChannelROI" value="lrChannelROI" />
+  		<property name="lrUserChannelAttribution" value="lrUserChannelAttribution" />  		  		
+  		<property name="partitionNum" value="1" />
+	</bean>
+
+	<bean name="attributionHub" class="com.accenture.aa.dmah.attribution.core.AttributionHub">
+		<property name="fetchAttributionInputs" ref="fetchAttributionInputs" />
+		<property name="userJourneyTransformer" ref="userJourneyTransformer" />
+		<property name="ModellingEngine" ref="modellingEngine" />
+		<property name="channelAttributionFactory" ref="channelAttributionFactory"/>
+	</bean>
+	
+	<bean name="userJourneyTransformer" class="com.accenture.aa.dmah.attribution.userjourney.UserJourneyTransformer">
+		<property name="mulltipleUserJourneyTransformer" ref="mulltipleUserJourneyTransformer" />
+	</bean>
+	
+	<bean name="modellingEngine" class="com.accenture.aa.dmah.attribution.modelling.ModellingEngine">
+		<property name="modellingUJTransformationFactory" ref="modellingUJTransformationFactory"/>
+		<property name="coreModellingEngineFactory" ref="coreModellingEngineFactory"/>
+	</bean>
+	
+	<bean name="mulltipleUserJourneyTransformer" class="com.accenture.aa.dmah.attribution.userjourney.MulltipleUserJourneyTransformer"></bean>
+	
+	
+	<bean name="channelAttributionFactory" class="com.accenture.aa.dmah.attribution.channelattribution.ChannelAttributionFactory">
+		<property name="heuristicsChannelAttribution" ref="heuristicsChannelAttribution"/>
+		<property name="logisticChannelAttribution" ref="logisticChannelAttribution"/>
+		<property name="markovChannelAttribution" ref="markovChannelAttribution"/>
+		<property name="randomForestChannelAttribution" ref="randomForestChannelAttribution"/>
+	</bean>
+	
+	<bean name="coreModellingEngineFactory" class="com.accenture.aa.dmah.attribution.modelling.CoreModellingEngineFactory">
+		<property name="logisticRegressionModellingEngine" ref="logisticRegressionModellingEngine"/>
+		<property name="heuristicsModellingEngine" ref="heuristicsModellingEngine"/>
+		<property name="markovChainModellingEngine" ref="markovChainModellingEngine"/>
+		<property name="randomForestModellingEngine" ref="randomForestModellingEngine"/>
+	</bean>
+	
+	<bean name="modellingUJTransformationFactory" class="com.accenture.aa.dmah.attribution.userjourney.ModellingUJTransformationFactory">
+		<property name="heuristicsUserJourneyTransformation" ref="heuristicsUserJourneyTransformation"/>
+		<property name="logisticRegressionUserJourneyTransformation" ref="logisticRegressionUserJourneyTransformation"/>
+		<property name="markovUserJourneyTransformation" ref="markovUserJourneyTransformation"/>
+		<property name="randomForestUserJourneyTransformation" ref="randomForestUserJourneyTransformation"/>
+	</bean>
+	
+	
+	<!-- Channel Attribution bean definitions start -->
+	<bean name="logisticChannelAttribution" class="com.accenture.aa.dmah.attribution.channelattribution.LogisticChannelAttribution">
+		<property name="queryExecutor" ref="queryExecutor" />
+		<property name="sparkContainer" ref="sparkContainer"/>
+		<property name="diagnosticConfig" ref="diagnosticConfig"/>
+	</bean>
+
+	 <bean name="heuristicsChannelAttribution"
+		class="com.accenture.aa.dmah.attribution.channelattribution.HeuristicsChannelAttribution">
+		<property name="heuristicsWeights" ref="heuristicsWeightsAssignment" />
+		<property name="heuristicTechniqueFactory" ref="heuristicTechniqueFactory" />
+		<property name="technique" value="LastClick"/>
+		<property name="diagnosticConfig" ref="diagnosticConfig"/>
+	</bean>
+	
+	<bean name="markovChannelAttribution" class="com.accenture.aa.dmah.attribution.channelattribution.MarkovChannelAttribution">
+		<property name="queryExecutor" ref="queryExecutor" />
+		<property name="sparkContainer" ref="sparkContainer"/>
+	</bean>
+	
+	<bean name="randomForestChannelAttribution" class="com.accenture.aa.dmah.attribution.channelattribution.RandomForestChannelAttribution">
+		<property name="queryExecutor" ref="queryExecutor" />
+		<property name="sparkContainer" ref="sparkContainer"/>
+	</bean>
+	
+	<!-- Modellling Engine bean definitions start -->
+	
+	<bean name="heuristicsModellingEngine"	class="com.accenture.aa.dmah.attribution.modelling.HeuristicsModellingEngine" >
+		<property name="queryExecutor" ref="queryExecutor" />
+		<!-- <property name="sparkContainer" ref="sparkContainer"/> -->
+	 </bean>
+	 
+	 <bean name="logisticRegressionModellingEngine"	class="com.accenture.aa.dmah.attribution.modelling.LogisticRegressionModellingEngine" >
+	 	<property name="queryExecutor" ref="queryExecutor" />
+	 	<property name="diagnosticConfig" ref="diagnosticConfig"/>
+		<!-- <property name="sparkContainer" ref="sparkContainer"/> -->
+	 </bean>
+	 
+	 <bean name="markovChainModellingEngine"	class="com.accenture.aa.dmah.attribution.modelling.MarkovChainModellingEngine" >
+	 	<property name="queryExecutor" ref="queryExecutor" />
+		<!-- <property name="sparkContainer" ref="sparkContainer"/> -->
+	 </bean>
+	 
+	 <bean name="randomForestModellingEngine"	class="com.accenture.aa.dmah.attribution.modelling.RandomForestModellingEngine" >
+	 	<property name="queryExecutor" ref="queryExecutor" />
+		<!-- <property name="sparkContainer" ref="sparkContainer"/> -->
+	 </bean>
+	 
+	<!-- UserJourneyTransformations bean definitions start -->
+	 <bean name="heuristicsUserJourneyTransformation"	class="com.accenture.aa.dmah.attribution.userjourney.HeuristicsUserJourneyTransformation" >
+	 	<property name="queryExecutor" ref="queryExecutor" />
+		<!-- <property name="sparkContainer" ref="sparkContainer"/> -->
+	 </bean>
+	 
+	 <bean name="logisticRegressionUserJourneyTransformation"	class="com.accenture.aa.dmah.attribution.userjourney.LogisticRegressionUserJourneyTransformation" >
+	 	<property name="queryExecutor" ref="queryExecutor" />
+	 	<property name="sampleNumber" value="5" />
+	 	<property name="userJourneyTable" value="c3" />
+	 	<property name="diagnosticConfig" ref="diagnosticConfig"/>
+	 </bean>
+	 
+	 <bean name="markovUserJourneyTransformation"	class="com.accenture.aa.dmah.attribution.userjourney.MarkovUserJourneyTransformation" >
+	 	<property name="queryExecutor" ref="queryExecutor" />
+		<!-- <property name="sparkContainer" ref="sparkContainer"/> -->
+	 </bean>
+	 
+	 <bean name="randomForestUserJourneyTransformation"	class="com.accenture.aa.dmah.attribution.userjourney.RandomForestUserJourneyTransformation" >
+	 	<property name="queryExecutor" ref="queryExecutor" />
+		<!-- <property name="sparkContainer" ref="sparkContainer"/> -->
+	 </bean>
+	
+	<!-- UserJourneyTransformations bean definitions end --> 
+	
+	<bean name="fetchAttributionInputs"
+		class="com.accenture.aa.dmah.attribution.dataprocessing.FetchAttributionInputs">
+		<property name="queryExecutor" ref="queryExecutor" />
+		<property name="sparkContainer" ref="sparkContainer"/>
+		<property name="userJourneyData" value="c3" />
+		<property name="salesData" value="sales" />
+		<property name="investmentData" value="investment" />
+		<property name="diagnosticConfig" ref="diagnosticConfig"/>
+	</bean>
+ 
+	<bean name="heuristicsWeightsAssignment"
+		class="com.accenture.aa.dmah.attribution.channelattribution.bo.HeuristicsWeightsAssignment" >
+		
+		<property name="originatorWeight" value="0.3" />
+		<property name="convertorWeight" value="0.5" />
+		<property name="intermediateWeight" value="0.2" />
+			
+	</bean> 
+	
+	<bean name="heuristicLastClick"
+		class="com.accenture.aa.dmah.attribution.channelattribution.HeuristicChannelAttributionLastClick" >		
+		<!-- <property name="whichMethod" value="1" />	  -->	
+		<property name="diagnosticConfig" ref="diagnosticConfig"/>
+	</bean> 
+	
+	<bean name="heuristicPositionBased"
+		class="com.accenture.aa.dmah.attribution.channelattribution.HeuristicChannelAttributionPositionBased" >		
+		<!-- <property name="whichMethod" value="1" />	  -->	
+		<property name="diagnosticConfig" ref="diagnosticConfig"/>
+	</bean>  
+	
+	<bean name="heuristicTechniqueFactory" class="com.accenture.aa.dmah.attribution.channelattribution.HeuristicTechniqueFactory">
+		<property name="heuristicPositionBased" ref="heuristicPositionBased" /> 
+		 <property name="heuristicLastClick" ref="heuristicLastClick" />  
+	</bean>
+	
+
+</beans>           

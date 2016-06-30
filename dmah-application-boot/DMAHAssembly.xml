@@ -1,0 +1,98 @@
+<assembly
+	xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd">
+	<id>bundle</id>
+	<formats>
+		<format>tar.gz</format>
+		<format>zip</format>
+		<!--<format>tar</format> -->
+	</formats>
+	<includeBaseDirectory>false</includeBaseDirectory>
+	 <dependencySets>
+        <dependencySet>
+            <!--
+                Project artifact is not copied under library directory since
+                it is added to the root directory of the zip package.
+            -->
+            <useProjectArtifact>false</useProjectArtifact>
+            <outputDirectory>lib</outputDirectory>
+            <unpack>false</unpack>
+        </dependencySet>
+    </dependencySets>
+    
+	<fileSets>
+	<fileSet>
+	 	<directory>${basedir}</directory>
+        <outputDirectory>/</outputDirectory>
+         <includes>
+                <include>log4j.xml</include>
+         </includes>
+    </fileSet> 
+    
+   <fileSet>
+	 	<directory>${basedir}/scripts</directory>
+        <outputDirectory>/bin</outputDirectory>
+         <fileMode>755</fileMode>
+         <includes>
+                <include>dmah-runner*.*</include>
+         </includes>
+    </fileSet> 
+    
+       <!--  <fileSet>
+            <directory>src/main/scala/resources</directory>  
+            <outputDirectory>/</outputDirectory>
+            <includes>
+                <include>log4j.xml</include>
+            </includes>
+        </fileSet> -->
+    
+        <fileSet>
+            <directory>src/main/scala/resources</directory>  
+            <outputDirectory>config/resources</outputDirectory>
+            <includes>
+                <include>**/*</include>
+            </includes>
+            <excludes>
+                <exclude>MANIFEST.MF</exclude>
+            </excludes>
+        </fileSet>
+    
+    
+   <!--  <fileSets>
+		<fileSet>
+        <outputDirectory>config</outputDirectory>
+         <includes>
+                <include>log4j.xml</include>
+                <include>src/main/scala/resources/*.xml</include>
+                <include>src/main/scala/resources/conf/*.xml</include>
+                <include>src/main/scala/resources/conf/core/*.xml</include>
+            </includes>
+    </fileSet>
+     -->
+
+    <fileSet>
+        <directory>${project.build.directory}/bin</directory>
+        <outputDirectory>${install.dir}/bin</outputDirectory>
+        <fileMode>755</fileMode>
+    </fileSet>
+      
+ <!--    <fileSet>
+        <directory>${project.build.directory}</directory>
+        <outputDirectory>${install.dir}/lib</outputDirectory>
+        <includes>
+            <include>dmah-application-boot-1.0-jar-with-dependencies.jar</include>
+        </includes>
+        <fileMode>755</fileMode>
+    </fileSet> -->
+   
+      <fileSet>
+            <directory>${project.build.directory}</directory>
+            <outputDirectory>lib</outputDirectory>
+            <includes>
+                <include>*.jar</include>
+            </includes>
+        </fileSet>
+    </fileSets>
+	
+</assembly>

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+	 <bean name="sparkDriver"
+		class="com.accenture.aa.dmah.spark.core.SparkDriver">
+		<property name="appName" value="DMAH-application"/>
+		<property name="nosqlClient" ref="nosqlClient" />
+		<property name="nosqlInitialization" ref="nosqlInitialization"/>
+		<property name="hdfsURI" value="hdfs://192.168.174.128:8020"/><!-- For writing files to hadoop -->
+		<property name="sparkConfig">
+    		<map>
+    			<entry key="spark.master" value="local[*]" />
+    			<!-- <entry key="spark.master" value="yarn-client" /> 
+    			 <entry key="spark.driver.host" value="192.168.2.130" /> -->
+    			<entry key="spark.cores.max" value="8" />
+    			<entry key="spark.sql.shuffle.partitions" value="8" />
+    			<entry key="spark.driver.memory" value="1g"/>
+    			<entry key="spark.executor.memory" value="1g" />
+    			<entry key="spark.executor.extraJavaOptions" value="-XX:+UseG1GC -XX:MaxNewSize=1g -XX:NewSize=1g -Xloggc:gc.log -verbose:gc -XX:+PrintGCDateStamps -XX:+PrintGCTimeStamps -XX:+PrintGCDetails" />
+    			<entry key="spark.driver.allowMultipleContexts" value="true" />
+    			<!-- <entry key="spark.yarn.am.cores" value="2" />
+    			<entry key="spark.executor.cores" value="4" />
+    			<entry key="spark.executor.memory" value="1g" />
+    			<entry key="spark.yarn.am.memory" value="512m" />
+    			<entry key="spark.hadoop.fs.defaultFS" value="hdfs://sandbox.hortonworks.com:8020" />
+    			<entry key="spark.hadoop.yarn.resourcemanager.hostname" value="sandbox.hortonworks.com" />
+    			<entry key="spark.hadoop.yarn.resourcemanager.address" value="sandbox.hortonworks.com:8050" />
+    			 -->
+    			
+     			
+    		</map>
+    	</property> 
+    	<property name="systemSparkConfig">
+    		<map>
+    			<entry key="hadoop.home.dir" value="C:/Hadoop" />
+    			<entry key="hive.metastore.uris" value="thrift://192.168.174.128:9083" />
+    			<entry key="hive.exec.scratchdir" value="C:/AI/Hive" />
+    			<entry key="hive.server2.logging.operation.log.location" value="C:/AI/Hive/operation_logs"/>
+    			<entry key="spark.sql.shuffle.partitions" value="8" />
+    			<!-- <entry key="SPARK_YARN_MODE" value="true"/> 
+     			<entry key="spark.driver.extraJavaOptions -Dhdp.version" value="2.4.0.0-169" />
+    			<entry key="spark.yarn.am.extraJavaOptions -Dhdp.version" value="2.4.0.0-169" /> -->
+    		</map>
+    	</property> 
+	</bean> 
+   	
+  	<bean name="sparkBootUp" class="com.accenture.aa.dmah.core.loaders.SparkLoader">
+		  <property name="sparkDriver" ref="sparkDriver" />
+ 	</bean>
+ 	<bean name="queryExecutor" class="com.accenture.aa.dmah.spark.core.QueryExecutor">
+ 		<property name="sparkDriver" ref="sparkDriver"/>
+ 	</bean>
+ 	<bean name="dataFrameController" class="com.accenture.aa.dmah.spark.controller.DataFrameController"/>
+ 	
+ 	<bean name="nosqlInitialization" class="com.accenture.aa.dmah.nosql.core.NoSqlInitialization"/>
+ 	
+   <bean name="noSQlService" class="com.accenture.aa.dmah.nosql.service.NoSQLServiceImpl">
+		  <property name="nosqlClient" ref="nosqlClient" />
+	</bean>
+ 	
+   <bean name="batchContainer" class="com.accenture.aa.dmah.nosql.writer.BatchContainerImpl">
+		  <property name="nosqlService" ref="noSQlService" />
+		    <property name="batchcount" value="5"/>
+	</bean>
+ 	<bean name="sparkContainer" class="com.accenture.aa.dmah.spark.core.SparkContainer">
+		  <property name="sparkDriver" ref="sparkDriver"/>
+		  <property name="batchContainer" ref="batchContainer"/>
+ 	
+ 	</bean>
+ 	<!--<bean name="testingClass" class="com.accenture.aa.dmah.spark.core.TestingClass">
+		  <property name="sparkContainer" ref="sparkContainer"/>
+	</bean>-->
+
+</beans>

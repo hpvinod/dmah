@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+         
+ 	<bean name="onInitializationLoaders" 
+		  class="com.accenture.aa.dmah.core.loaders.LoaderList">
+ 
+		 <property name="list">
+              <list>
+                 	<ref bean="sparkBootUp" />
+                 	<ref bean="nosqlLoader"/>
+              </list>
+       	</property>
+	</bean>
+	
+	
+	<bean name="attributionJobRunner" 
+		  class="com.accenture.aa.dmah.attribution.jobs.AttributionJobFactory">
+ 			<property name="attributionJob" ref="attributionJob"/>
+ 			<property name="propertiesFileName" value="attribution.properties"/>
+ 	</bean>
+	
+	<bean name="dataIngestionJobRunner" 
+		  class="com.accenture.aa.dmah.dataingestion.jobs.DataIngestionJobFactory">
+ 		<property name="dataIngestionJob" ref="dataIngestionJob"/>
+ 		<property name="propertiesFileName" value="attribution.properties"/>
+	</bean>
+	
+	
+ 	<bean name="attributionJob" 
+		  class="com.accenture.aa.dmah.attribution.jobs.AttributionJob">
+ 		<property name="attributionHub" ref="attributionHub" />
+	</bean>
+	
+	<bean name="dataIngestionJob" 
+		  class="com.accenture.aa.dmah.dataingestion.jobs.DataIngestionJob">
+     </bean>
+	
+	<bean name="nosqlLoader" class="com.accenture.aa.dmah.core.loaders.NoSqlLoader">
+		  <property name="nosqlClient" ref="nosqlClient" />
+ 	</bean>	
+
+</beans>
